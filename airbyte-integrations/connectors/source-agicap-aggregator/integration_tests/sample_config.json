@@ -1,0 +1,6 @@
+{
+  "api_base_url": "https://aggregator.agicap.com/internal/data-handling/",
+  "client_id": "fake_client_id",
+  "client_secret": "fake_client_secret",
+  "token_refresh_endpoint": "https://myaccount.agicap.com/connect/token"
+}
