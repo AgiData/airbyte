@@ -1,0 +1,115 @@
+version: 3.9.6
+
+type: DeclarativeSource
+
+check:
+  type: CheckStream
+  stream_names:
+    - integrations
+
+definitions:
+  base_requester:
+    type: HttpRequester
+    url_base: '{{ config["api_base_url"] }}'
+    authenticator:
+      type: OAuthAuthenticator
+      client_id: '{{ config["client_id"] }}'
+      client_secret: '{{ config["client_secret"] }}'
+      grant_type: client_credentials
+      token_refresh_endpoint: '{{ config["token_refresh_endpoint"] }}'
+      scopes:
+        - aggregator:read
+
+  streams:
+    integrations:
+      type: DeclarativeStream
+      name: integrations
+      primary_key:
+        - Id
+      retriever:
+        type: SimpleRetriever
+        requester:
+          $ref: '#/definitions/base_requester'
+          path: /integrations
+          http_method: GET
+        record_selector:
+          type: RecordSelector
+          extractor:
+            type: DpathExtractor
+            field_path: []
+      schema_loader:
+        type: InlineSchemaLoader
+        schema:
+          $ref: '#/schemas/integrations'
+
+streams:
+  - $ref: '#/definitions/streams/integrations'
+
+spec:
+  type: Spec
+  connection_specification:
+    type: object
+    $schema: http://json-schema.org/draft-07/schema#
+    required:
+      - api_base_url
+      - client_id
+      - client_secret
+      - token_refresh_endpoint
+    properties:
+      api_base_url:
+        type: string
+        title: API Base URL
+        description: May be different in DEV and PROD environments
+        default: https://aggregator.agicap.com/internal/data-handling
+        order: 0
+      client_id:
+        type: string
+        order: 1
+        title: Client ID
+        airbyte_secret: true
+      client_secret:
+        type: string
+        order: 2
+        title: Client secret
+        airbyte_secret: true
+      token_refresh_endpoint:
+        type: string
+        title: Token refresh endpoint
+        description: May be different in DEV and PROD environments
+        default: https://myaccount.agicap.com/connect/token
+        order: 3
+    additionalProperties: true
+
+metadata:
+  autoImportSchema:
+    integrations: true
+  yamlComponents:
+    global:
+      - authenticator
+
+schemas:
+  integrations:
+    type: object
+    $schema: http://json-schema.org/schema#
+    additionalProperties: true
+    required:
+      - Id
+    properties:
+      Id:
+        type: string
+      ConnectionType:
+        type:
+          - number
+          - 'null'
+      DisplayName:
+        type:
+          - string
+          - 'null'
+      Name:
+        type:
+          - string
+          - 'null'
+      Protocol:
+        type:
+          - number
+          - 'null'
