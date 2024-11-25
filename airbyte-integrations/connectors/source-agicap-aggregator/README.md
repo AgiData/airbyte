@@ -41,6 +41,7 @@ Some useful commands to test the connector locally:
 # `cd` to the source-agicap-aggregator connector repository
 docker run --rm -i airbyte/source-agicap-aggregator:dev spec
 docker run --rm -v $(pwd):/data -i airbyte/source-agicap-aggregator:dev check --config /data/secrets/prod_config.json
+docker run --rm -v $(pwd):/data -i airbyte/source-agicap-aggregator:dev discover --config /data/secrets/prod_config.json
 docker run --rm -v $(pwd):/data -i airbyte/source-agicap-aggregator:dev read --config /data/secrets/prod_config.json --catalog /data/integration_tests/configured_catalog.json > secrets/output.json
 cat secrets/output.json
 ```
