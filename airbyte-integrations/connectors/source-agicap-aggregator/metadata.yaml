@@ -9,7 +9,7 @@ data:
     cloud:
       enabled: false
   connectorBuildOptions:
-    baseImage: docker.io/airbyte/source-declarative-manifest:6.1.0@sha256:3ac88000d74db5f9d8dcb004299b917a5dff5cbbc19ebccd49288266095547ca
+    baseImage: docker.io/airbyte/source-declarative-manifest:6.5.2
   connectorSubtype: api
   connectorType: source
   definitionId: 0abe53dd-7fbe-4242-9197-5b5d2ed21ca4
