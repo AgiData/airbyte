@@ -8,6 +8,18 @@ check:
     - integrations
 
 definitions:
+  base_requester:
+    type: HttpRequester
+    url_base: '{{ config["api_base_url"] }}'
+    authenticator:
+      type: OAuthAuthenticator
+      client_id: '{{ config["client_id"] }}'
+      client_secret: '{{ config["client_secret"] }}'
+      grant_type: client_credentials
+      token_refresh_endpoint: '{{ config["token_refresh_endpoint"] }}'
+      scopes:
+        - aggregator:read
+
   streams:
     integrations:
       type: DeclarativeStream
@@ -18,7 +30,7 @@ definitions:
         type: SimpleRetriever
         requester:
           $ref: '#/definitions/base_requester'
-          path: integrations
+          path: /integrations
           http_method: GET
         record_selector:
           type: RecordSelector
@@ -29,18 +41,6 @@ definitions:
         type: InlineSchemaLoader
         schema:
           $ref: '#/schemas/integrations'
-  base_requester:
-    type: HttpRequester
-    url_base: '{{ config[''api_base_url''] }}'
-    authenticator:
-      type: OAuthAuthenticator
-      scopes:
-        - aggregator:read
-      client_id: '{{ config["client_id"] }}'
-      grant_type: client_credentials
-      client_secret: '{{ config["client_secret"] }}'
-      refresh_request_body: {}
-      token_refresh_endpoint: '{{ config[''token_refresh_endpoint''] }}'
 
 streams:
   - $ref: '#/definitions/streams/integrations'
@@ -60,7 +60,7 @@ spec:
         type: string
         title: API Base URL
         description: May be different in DEV and PROD environments
-        default: https://aggregator.agicap.com/internal/data-handling/
+        default: https://aggregator.agicap.com/internal/data-handling
         order: 0
       client_id:
         type: string
@@ -83,21 +83,20 @@ spec:
 metadata:
   autoImportSchema:
     integrations: true
-  testedStreams:
-    integrations:
-      streamHash: 4752d1d4d214744323ece3edc301afbd76d5ceee
-      hasResponse: true
-      responsesAreSuccessful: true
-      hasRecords: true
-      primaryKeysArePresent: true
-      primaryKeysAreUnique: true
+  yamlComponents:
+    global:
+      - authenticator
 
 schemas:
   integrations:
     type: object
     $schema: http://json-schema.org/schema#
     additionalProperties: true
+    required:
+      - Id
     properties:
+      Id:
+        type: string
       ConnectionType:
         type:
           - number
@@ -106,8 +105,6 @@ schemas:
         type:
           - string
           - 'null'
-      Id:
-        type: string
       Name:
         type:
           - string
@@ -116,5 +113,3 @@ schemas:
         type:
           - number
           - 'null'
-    required:
-      - Id
